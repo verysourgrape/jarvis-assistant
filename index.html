@@ -1,0 +1,156 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(ellipse at center, #09233b, #020711 70%);
+  color: #00eaff;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  overflow-x: hidden;
+}
+header { padding: 25px 10px 5px; letter-spacing: 5px; }
+h1 {
+  font-size: 25px;
+  text-shadow: 0 0 15px #00dfff;
+}
+.status { color: #7dfaff; font-size: 11px; letter-spacing: 3px; }
+.reactor {
+  width: 210px; height: 210px;
+  border: 2px solid #00dfff;
+  border-radius: 50%;
+  margin: 35px auto 25px;
+  display: grid; place-items: center;
+  box-shadow: 0 0 20px #00cfff, inset 0 0 25px #007bff;
+  position: relative;
+  animation: pulse 2s infinite alternate;
+}
+.reactor:before, .reactor:after {
+  content: ""; position: absolute; border-radius: 50%;
+  border: 1px dashed #00dfff;
+}
+.reactor:before { inset: 12px; animation: spin 12s linear infinite; }
+.reactor:after { inset: 28px; animation: spin 8s linear infinite reverse; }
+.core {
+  width: 75px; height: 75px; border-radius: 50%;
+  background: #00dfff;
+  box-shadow: 0 0 20px #00dfff, 0 0 55px #008cff;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse {
+  from { box-shadow: 0 0 10px #00cfff, inset 0 0 15px #007bff; }
+  to { box-shadow: 0 0 35px #00cfff, inset 0 0 35px #007bff; }
+}
+.panel {
+  margin: 15px auto; padding: 15px;
+  width: 88%; max-width: 430px;
+  border: 1px solid #087caa;
+  background: #041322cc;
+  border-radius: 12px;
+  box-shadow: 0 0 12px #003d60;
+}
+button {
+  background: #06283b; color: #00eaff;
+  border: 1px solid #00dfff; border-radius: 8px;
+  padding: 12px 18px; margin: 6px;
+  font-size: 14px;
+}
+button:active { background: #075477; }
+input {
+  width: 95%; padding: 12px; border-radius: 8px;
+  border: 1px solid #00dfff; background: #020b15;
+  color: white; margin: 8px 0;
+}
+#reply { min-height: 35px; color: #b7faff; }
+.small { font-size: 11px; color: #65aebe; letter-spacing: 2px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>J.A.R.V.I.S.</h1>
+  <div class="status">PERSONAL AI SYSTEM ONLINE</div>
+</header>
+
+<div class="reactor"><div class="core"></div></div>
+
+<div class="panel">
+  <div class="small">SYSTEM STATUS</div>
+  <p>● REACTOR ONLINE</p>
+  <p>● INTERFACE ACTIVE</p>
+  <p>● VOICE MODULE READY</p>
+</div>
+
+<div class="panel">
+  <div class="small">VOICE INTERFACE</div>
+  <p id="reply">Good evening, sir. Systems are ready.</p>
+  <button onclick="speak('At your service, sir. All systems are operational.')">
+    ACTIVATE JARVIS
+  </button>
+  <button onclick="listen()">🎙 SPEAK</button>
+  <input id="command" placeholder="Type a command, sir...">
+  <button onclick="sendCommand()">SEND</button>
+</div>
+
+<div class="small">JARVIS INTERFACE // VERSION 1.0</div>
+
+<script>
+const reply = document.getElementById("reply");
+
+function speak(message) {
+  reply.textContent = message;
+  if ("speechSynthesis" in window) {
+    speechSynthesis.cancel();
+    const voice = new SpeechSynthesisUtterance(message);
+    voice.rate = 0.95;
+    voice.pitch = 0.8;
+    speechSynthesis.speak(voice);
+  }
+}
+
+function sendCommand() {
+  const command = document.getElementById("command").value.trim();
+  if (!command) return;
+  const c = command.toLowerCase();
+
+  if (c.includes("time")) {
+    speak("The time is " + new Date().toLocaleTimeString());
+  } else if (c.includes("hello") || c.includes("jarvis")) {
+    speak("Hello, sir. I am online and ready.");
+  } else if (c.includes("status")) {
+    speak("All dashboard systems are operational, sir.");
+  } else {
+    speak("Command received, sir. This demonstration version is ready for its AI connection.");
+  }
+}
+
+function listen() {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    speak("Voice recognition is not supported in this browser. Please use the command box.");
+    return;
+  }
+  const recognition = new SpeechRecognition();
+  recognition.lang = "en-US";
+  recognition.onresult = function(event) {
+    document.getElementById("command").value =
+      event.results[0][0].transcript;
+    sendCommand();
+  };
+  recognition.onerror = function() {
+    reply.textContent = "Microphone unavailable. Check Safari permissions.";
+  };
+  recognition.start();
+}
+</script>
+</body>
+</html>
+
+<button onclick="window.open('https://chatgpt.com/','_blank')">
+  OPEN JARVIS AI BRAIN
+</button>
